@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
+import BigCalendar from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import Popup from "react-popup";
 
-const localizer = momentLocalizer(moment);
+const localizer = BigCalendar.momentLocalizer(moment);
 
 const App = () => {
   const [events, setEvents] = useState([]);
@@ -15,22 +16,12 @@ const App = () => {
   const [eventLocation, setEventLocation] = useState("");
   const [filter, setFilter] = useState("all");
 
-  const now = new Date();
-
-  // Filtering events
-  const filteredEvents =
-    filter === "all"
-      ? events
-      : filter === "past"
-      ? events.filter((e) => new Date(e.end) < now)
-      : events.filter((e) => new Date(e.start) >= now);
-
-  // Popup handlers
   const handleSelectSlot = (slotInfo) => {
     setSelectedSlot(slotInfo);
     setEventTitle("");
     setEventLocation("");
     setShowCreatePopup(true);
+    
   };
 
   const handleSelectEvent = (event) => {
@@ -72,33 +63,39 @@ const App = () => {
     setShowEditPopup(false);
   };
 
+  const now = new Date();
+  const filteredEvents =
+    filter === "all"
+      ? events
+      : filter === "past"
+      ? events.filter((e) => new Date(e.end) < now)
+      : events.filter((e) => new Date(e.start) >= now);
+
   return (
     <div style={{ padding: 20 }}>
-      <h1>Event Tracker Calendar</h1>
-
-      {/* Filter Buttons */}
-      <div className="filter-buttons" style={{ marginBottom: 20 }}>
-        {["all", "past", "upcoming"].map((type) => (
+      <div className="header">
+        <h1>Event Tracker Calendar</h1>
+        <div className="filter-buttons">
           <button
-            key={type}
-            className={`btn ${filter === type ? "active" : ""}`}
-            onClick={() => setFilter(type)}
-            style={{
-              marginRight: 8,
-              padding: "6px 12px",
-              cursor: "pointer",
-              backgroundColor: filter === type ? "#4caf50" : "#eee",
-              color: filter === type ? "white" : "black",
-              border: "none",
-              borderRadius: 4,
-            }}
+            className={`btn ${filter === "all" ? "active" : ""}`}
+            onClick={() => setFilter("all")}
           >
-            {type.charAt(0).toUpperCase() + type.slice(1)}
+            All
           </button>
-        ))}
+          <button
+            className={`btn ${filter === "past" ? "active" : ""}`}
+            onClick={() => setFilter("past")}
+          >
+            Past
+          </button>
+          <button
+            className={`btn ${filter === "upcoming" ? "active" : ""}`}
+            onClick={() => setFilter("upcoming")}
+          >
+            Upcoming
+          </button>
+        </div>
       </div>
-
-      {/* Calendar */}
       <BigCalendar
         localizer={localizer}
         events={filteredEvents}
@@ -109,21 +106,26 @@ const App = () => {
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
         popup
-        views={["month"]}
-        eventPropGetter={(event) => {
-          const isPast = new Date(event.end) < now;
-          return {
-            style: {
-              backgroundColor: isPast
-                ? "rgb(222, 105, 135)"
-                : "rgb(140, 189, 76)",
-              color: "white",
-            },
-          };
+        views={["month"]} // "month" is enough for slot selection
+        components={{
+          event: (props) => {
+            const isPast = new Date(props.event.end) < now;
+            return (
+              <div
+                className={`rbc-event${isPast ? " past" : ""}`}
+                style={{
+                  backgroundColor: isPast
+                    ? "rgb(222, 105, 135)"
+                    : "rgb(140, 189, 76)",
+                  color: "white",
+                }}
+              >
+                {props.title}
+              </div>
+            );
+          },
         }}
       />
-
-      {/* Create Event Popup */}
       {showCreatePopup && (
         <div className="popup-overlay">
           <div className="mm-popup__box">
@@ -165,8 +167,6 @@ const App = () => {
           </div>
         </div>
       )}
-
-      {/* Edit Event Popup */}
       {showEditPopup && (
         <div className="popup-overlay">
           <div className="mm-popup__box">
