@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="4" failures="0" time="7.233">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2020-10-02T11:09:10" time="4.055" tests="3">
+    <testcase classname=" check for ordered list" name=" check for ordered list" time="0.076">
+    </testcase>
+    <testcase classname=" check for ordered list item type" name=" check for ordered list item type" time="0.02">
+    </testcase>
+    <testcase classname=" check valid cities" name=" check valid cities" time="0.012">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2020-10-02T11:09:14" time="1.313" tests="1">
+    <testcase classname=" check for ordered list key" name=" check for ordered list key" time="0.088">
+    </testcase>
+  </testsuite>
+</testsuites>
